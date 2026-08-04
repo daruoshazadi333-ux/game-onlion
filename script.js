@@ -3,17 +3,21 @@
 // ============================================================
 let playerName = '';
 let selectedGame = '';
+let selectedPlayers = 2;
 let currentGame = '';
 
 // PeerJS
 let peer = null;
-let connection = null;
+let connections = [];
 let roomId = '';
 let roomCreator = false;
+let players = [];
+let maxPlayers = 2;
 
 // عناصر DOM
 const loginPage = document.getElementById('loginPage');
 const menuPage = document.getElementById('menuPage');
+const playersPage = document.getElementById('playersPage');
 const roomPage = document.getElementById('roomPage');
 const gamePage = document.getElementById('gamePage');
 const playerNameInput = document.getElementById('playerName');
@@ -21,12 +25,15 @@ const menuUsername = document.getElementById('menuUsername');
 const roomIdInput = document.getElementById('roomId');
 const inviteBox = document.getElementById('inviteBox');
 const roomCodeSpan = document.getElementById('roomCode');
-const selectedGameTitle = document.getElementById('selectedGameTitle');
+const selectedGameTitle2 = document.getElementById('selectedGameTitle2');
+const roomTitle = document.getElementById('roomTitle');
 const p1Name = document.getElementById('p1Name');
 const p2Name = document.getElementById('p2Name');
 const turnIndicator = document.getElementById('turnIndicator');
 const gameStatus = document.getElementById('gameStatus');
 const gameBoard = document.getElementById('gameBoard');
+const playersList = document.getElementById('playersList');
+const playersListUl = document.getElementById('playersListUl');
 
 // ============================================================
 //  صفحه ۱: ورود
@@ -59,16 +66,32 @@ function selectGame(game) {
         'dots': '🔴 خط و نقطه',
         'four': '🟡 چهار تایی'
     };
-    selectedGameTitle.textContent = names[game] || '🎮 بازی';
+    selectedGameTitle2.textContent = names[game] || '🎮 بازی';
     menuPage.classList.remove('active');
-    roomPage.classList.add('active');
-    inviteBox.style.display = 'none';
-    roomIdInput.value = '';
+    playersPage.classList.add('active');
 }
 
 function backToMenu() {
-    roomPage.classList.remove('active');
+    playersPage.classList.remove('active');
     menuPage.classList.add('active');
+}
+
+// ============================================================
+//  صفحه ۳: انتخاب تعداد نفرات
+// ============================================================
+function selectPlayers(count) {
+    selectedPlayers = count;
+    playersPage.classList.remove('active');
+    roomPage.classList.add('active');
+    roomTitle.textContent = `🎮 ${selectedGame === 'chess' ? 'شطرنج' : selectedGame === 'xo' ? 'دوز' : selectedGame === 'dots' ? 'خط و نقطه' : 'چهار تایی'} - ${count} نفره`;
+    inviteBox.style.display = 'none';
+    roomIdInput.value = '';
+    playersList.style.display = 'none';
+}
+
+function backToPlayers() {
+    roomPage.classList.remove('active');
+    playersPage.classList.add('active');
     if (peer) {
         peer.destroy();
         peer = null;
@@ -76,7 +99,7 @@ function backToMenu() {
 }
 
 // ============================================================
-//  صفحه ۳: اتاق
+//  صفحه ۴: اتاق
 // ============================================================
 function createRoom() {
     if (!playerName) {
@@ -85,6 +108,10 @@ function createRoom() {
     }
 
     roomCreator = true;
+    maxPlayers = selectedPlayers;
+    players = [playerName];
+    connections = [];
+
     if (peer) {
         peer.destroy();
         peer = null;
@@ -97,17 +124,23 @@ function createRoom() {
         roomCodeSpan.textContent = roomId;
         inviteBox.style.display = 'block';
         roomIdInput.value = roomId;
+        updatePlayersList();
 
-        gameStatus.textContent = '⏳ منتظر ورود حریف...';
+        gameStatus.textContent = `⏳ منتظر ورود ${maxPlayers - 1} نفر دیگر...`;
         roomPage.classList.remove('active');
         gamePage.classList.add('active');
         setupGameUI();
 
         peer.on('connection', (conn) => {
-            connection = conn;
-            setupConnection();
-            gameStatus.textContent = '✅ حریف پیدا شد!';
-            startGame();
+            connections.push(conn);
+            setupConnection(conn);
+            conn.on('open', () => {
+                sendTo(conn, { type: 'name', name: playerName });
+                sendTo(conn, { type: 'game', game: selectedGame });
+                sendTo(conn, { type: 'players', count: maxPlayers });
+                // درخواست اسم از مهمان
+                sendTo(conn, { type: 'request_name' });
+            });
         });
     });
 
@@ -133,8 +166,9 @@ function joinRoom() {
     peer = new Peer(undefined, { debug: 2 });
 
     peer.on('open', () => {
-        connection = peer.connect(targetId);
-        setupConnection();
+        const conn = peer.connect(targetId);
+        connections = [conn];
+        setupConnection(conn);
 
         roomPage.classList.remove('active');
         gamePage.classList.add('active');
@@ -149,11 +183,98 @@ function joinRoom() {
 }
 
 // ============================================================
+//  مدیریت اتصال
+// ============================================================
+function setupConnection(conn) {
+    conn.on('open', () => {
+        sendTo(conn, { type: 'name', name: playerName });
+        sendTo(conn, { type: 'game', game: selectedGame });
+        if (!roomCreator) {
+            sendTo(conn, { type: 'ready' });
+        }
+    });
+
+    conn.on('data', (data) => {
+        handleIncomingData(data, conn);
+    });
+
+    conn.on('close', () => {
+        const idx = connections.indexOf(conn);
+        if (idx > -1) connections.splice(idx, 1);
+        if (roomCreator) {
+            gameStatus.textContent = '❌ یک بازیکن قطع شد!';
+        }
+    });
+}
+
+function sendTo(conn, data) {
+    if (conn && conn.open) {
+        conn.send(data);
+    }
+}
+
+function sendAll(data) {
+    connections.forEach(conn => {
+        sendTo(conn, data);
+    });
+}
+
+function handleIncomingData(data, conn) {
+    console.log('📩 Received:', data);
+
+    switch (data.type) {
+        case 'name':
+            if (!players.includes(data.name)) {
+                players.push(data.name);
+                updatePlayersList();
+                if (roomCreator && players.length === maxPlayers) {
+                    gameStatus.textContent = '✅ همه بازیکنان آماده‌اند!';
+                    setTimeout(() => startGame(), 500);
+                }
+            }
+            break;
+        case 'request_name':
+            sendTo(conn, { type: 'name', name: playerName });
+            break;
+        case 'game':
+            currentGame = data.game;
+            break;
+        case 'players':
+            maxPlayers = data.count;
+            break;
+        case 'ready':
+            if (roomCreator) {
+                if (!players.includes(data.name)) {
+                    players.push(data.name);
+                    updatePlayersList();
+                }
+                if (players.length === maxPlayers) {
+                    gameStatus.textContent = '✅ همه بازیکنان آماده‌اند!';
+                    setTimeout(() => startGame(), 500);
+                }
+            }
+            break;
+        case 'move':
+            if (!gameOver) {
+                handleMove(data);
+            }
+            break;
+        case 'reset':
+            resetBoard();
+            sendAll({ type: 'reset_confirm' });
+            break;
+        case 'reset_confirm':
+            resetBoard();
+            break;
+    }
+}
+
+// ============================================================
 //  کپی کد اتاق
 // ============================================================
 function copyRoomCode() {
     const code = roomCodeSpan.textContent;
-    if (!code) {
+    if (!code || code === '-----') {
         alert('❌ کد اتاق پیدا نشد!');
         return;
     }
@@ -184,8 +305,16 @@ function showToast(msg) {
     }, 2500);
 }
 
+function updatePlayersList() {
+    if (!roomCreator) return;
+    playersList.style.display = 'block';
+    playersListUl.innerHTML = players.map((p, i) =>
+        `<li>${i+1}. ${p} ${i === 0 ? '👑' : ''}</li>`
+    ).join('');
+}
+
 // ============================================================
-//  صفحه ۴: بازی
+//  صفحه ۵: بازی
 // ============================================================
 function setupGameUI() {
     gameBoard.className = '';
@@ -194,66 +323,6 @@ function setupGameUI() {
     p2Name.textContent = 'در انتظار... (O)';
     turnIndicator.textContent = '⏳ در حال اتصال...';
     gameStatus.textContent = '⏳ منتظر حریف...';
-}
-
-function setupConnection() {
-    connection.on('open', () => {
-        sendData({ type: 'name', name: playerName });
-        sendData({ type: 'game', game: selectedGame });
-        if (!roomCreator) {
-            sendData({ type: 'ready' });
-        }
-    });
-
-    connection.on('data', (data) => {
-        handleIncomingData(data);
-    });
-
-    connection.on('close', () => {
-        gameStatus.textContent = '❌ حریف قطع شد!';
-        turnIndicator.textContent = '🔌 قطع شد';
-    });
-}
-
-function sendData(data) {
-    if (connection && connection.open) {
-        connection.send(data);
-    }
-}
-
-function handleIncomingData(data) {
-    console.log('📩 Received:', data);
-
-    switch (data.type) {
-        case 'name':
-            if (roomCreator) {
-                p2Name.textContent = data.name + ' (O)';
-            } else {
-                p1Name.textContent = data.name + ' (X)';
-            }
-            break;
-        case 'game':
-            currentGame = data.game;
-            break;
-        case 'ready':
-            if (roomCreator) {
-                gameStatus.textContent = '✅ حریف آماده شد!';
-                startGame();
-            }
-            break;
-        case 'move':
-            if (!gameOver) {
-                handleMove(data);
-            }
-            break;
-        case 'reset':
-            resetBoard();
-            sendData({ type: 'reset_confirm' });
-            break;
-        case 'reset_confirm':
-            resetBoard();
-            break;
-    }
 }
 
 // ============================================================
@@ -266,11 +335,7 @@ let gameState = {};
 
 function startGame() {
     gameOver = false;
-    if (roomCreator) {
-        isMyTurn = true;
-    } else {
-        isMyTurn = false;
-    }
+    isMyTurn = roomCreator;
 
     switch (selectedGame) {
         case 'xo':
@@ -398,232 +463,4 @@ function renderBoard(type) {
 function onCellClick(index) {
     if (gameOver || !isMyTurn || board[index]) return;
 
-    let moveData = { index: index };
-
-    switch (selectedGame) {
-        case 'xo':
-            if (board[index]) return;
-            board[index] = 'X';
-            moveData.symbol = 'X';
-            break;
-        case 'dots':
-            board[index] = 'X';
-            moveData.symbol = 'X';
-            break;
-        case 'four':
-            const cols = gameState.cols;
-            const row = Math.floor(index / cols);
-            const col = index % cols;
-            // پیدا کردن پایین‌ترین خانه خالی در این ستون
-            let targetRow = row;
-            for (let r = gameState.rows - 1; r >= 0; r--) {
-                const idx = r * cols + col;
-                if (!board[idx]) {
-                    targetRow = r;
-                    break;
-                }
-            }
-            const targetIdx = targetRow * cols + col;
-            if (board[targetIdx]) return;
-            board[targetIdx] = 'X';
-            moveData.index = targetIdx;
-            moveData.symbol = 'X';
-            break;
-        case 'chess':
-            // شطرنج ساده
-            if (gameState.selected === null) {
-                const p = board[index];
-                if (p && p.color === 'w') {
-                    gameState.selected = index;
-                    renderBoard('chess');
-                    const cell = document.querySelector(`.cell[data-index="${index}"]`);
-                    if (cell) cell.classList.add('selected');
-                }
-                return;
-            } else {
-                const from = gameState.selected;
-                const p = board[from];
-                if (!p) { gameState.selected = null;
-                    renderBoard('chess'); return; }
-                // حرکت ساده
-                board[index] = p;
-                board[from] = null;
-                gameState.selected = null;
-                moveData = { from: from, to: index, piece: p };
-            }
-            break;
-    }
-
-    sendData({ type: 'move', ...moveData });
-
-    isMyTurn = false;
-    updateTurnIndicator();
-    renderBoardByType();
-    checkWinner();
-}
-
-// ============================================================
-//  دریافت حرکت از حریف
-// ============================================================
-function handleMove(data) {
-    if (gameOver || isMyTurn) return;
-
-    switch (selectedGame) {
-        case 'xo':
-        case 'dots':
-            board[data.index] = data.symbol || 'O';
-            break;
-        case 'four':
-            board[data.index] = data.symbol || 'O';
-            break;
-        case 'chess':
-            if (data.from !== undefined && data.to !== undefined) {
-                board[data.to] = data.piece;
-                board[data.from] = null;
-            }
-            break;
-    }
-
-    isMyTurn = true;
-    updateTurnIndicator();
-    renderBoardByType();
-    checkWinner();
-}
-
-// ============================================================
-//  رندر بر اساس نوع بازی
-// ============================================================
-function renderBoardByType() {
-    const type = selectedGame === 'chess' ? 'chess' :
-        selectedGame === 'dots' ? 'dots' :
-        selectedGame === 'four' ? 'four' : 'xo';
-    renderBoard(type);
-}
-
-// ============================================================
-//  بررسی برنده
-// ============================================================
-function checkWinner() {
-    // دوز
-    if (selectedGame === 'xo') {
-        const wins = [
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            [0, 4, 8],
-            [2, 4, 6]
-        ];
-        for (const w of wins) {
-            if (board[w[0]] && board[w[0]] === board[w[1]] && board[w[0]] === board[w[2]]) {
-                gameOver = true;
-                const winner = board[w[0]] === 'X' ? p1Name.textContent : p2Name.textContent;
-                gameStatus.textContent = `🏆 ${winner} برنده شد!`;
-                turnIndicator.textContent = '🎉 بازی تمام شد!';
-                w.forEach(i => {
-                    const cell = document.querySelector(`.cell[data-index="${i}"]`);
-                    if (cell) cell.classList.add('win');
-                });
-                return;
-            }
-        }
-        if (board.every(c => c)) {
-            gameOver = true;
-            gameStatus.textContent = '🤝 مساوی!';
-            turnIndicator.textContent = '😐 بازی مساوی شد';
-        }
-    }
-
-    // خط و نقطه و چهارتایی ساده
-    if (selectedGame === 'dots' || selectedGame === 'four') {
-        // ساده: فقط چک کن پر شده
-        if (board.every(c => c)) {
-            gameOver = true;
-            gameStatus.textContent = '🤝 مساوی!';
-            turnIndicator.textContent = '😐 بازی مساوی شد';
-        }
-    }
-
-    // شطرنج ساده
-    if (selectedGame === 'chess') {
-        let hasKing = false;
-        for (const p of board) {
-            if (p && p.type === 'K' && p.color === 'b') hasKing = true;
-        }
-        if (!hasKing) {
-            gameOver = true;
-            gameStatus.textContent = `🏆 ${p1Name.textContent} برنده شد!`;
-            turnIndicator.textContent = '🎉 کیش‌مات!';
-        }
-    }
-
-    updateTurnIndicator();
-}
-
-// ============================================================
-//  کنترل‌های بازی
-// ============================================================
-function resetGame() {
-    if (!gameOver) {
-        if (!confirm('بازی فعلی رو از دست می‌دی، مطمئنی؟')) return;
-    }
-    sendData({ type: 'reset' });
-    resetBoard();
-}
-
-function resetBoard() {
-    gameOver = false;
-    isMyTurn = roomCreator;
-    gameState = {};
-    switch (selectedGame) {
-        case 'xo':
-            board = Array(9).fill(null);
-            break;
-        case 'dots':
-            board = Array(25).fill(null);
-            gameState = { size: 5 };
-            break;
-        case 'four':
-            board = Array(42).fill(null);
-            gameState = { rows: 6, cols: 7 };
-            break;
-        case 'chess':
-            startChess();
-            return;
-    }
-    renderBoardByType();
-    updateTurnIndicator();
-    gameStatus.textContent = '🔄 بازی جدید!';
-}
-
-function updateTurnIndicator() {
-    if (gameOver) {
-        turnIndicator.textContent = '🎯 بازی تمام شد';
-        return;
-    }
-    if (isMyTurn) {
-        turnIndicator.textContent = '🎯 نوبت شما';
-        turnIndicator.style.color = '#00f0ff';
-    } else {
-        turnIndicator.textContent = '⏳ نوبت حریف';
-        turnIndicator.style.color = '#ff6b6b';
-    }
-}
-
-function leaveGame() {
-    if (connection) connection.close();
-    if (peer) peer.destroy();
-    gamePage.classList.remove('active');
-    roomPage.classList.add('active');
-    inviteBox.style.display = 'none';
-    roomIdInput.value = '';
-    gameStatus.textContent = '';
-}
-
-// ============================================================
-//  راه‌اندازی اولیه
-// ============================================================
-console.log('⚡ نئون گیمز لود شد!');
-console.log('🎮 بازی‌ها: شطرنج، دوز، خط و نقطه، چهار تایی');
+   
