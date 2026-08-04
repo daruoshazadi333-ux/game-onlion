@@ -46,7 +46,6 @@ body {
     letter-spacing: 2px;
 }
 
-/* ===== دکمه‌ها ===== */
 .btn {
     padding: 12px;
     background: linear-gradient(135deg, #00c8ff, #0066ff);
@@ -80,7 +79,6 @@ body {
     border-radius: 30px;
 }
 
-/* ===== فرم‌ها ===== */
 .form-box {
     display: flex;
     flex-direction: column;
@@ -106,7 +104,6 @@ body {
     border-color: #00f0ff;
 }
 
-/* ===== صفحات ===== */
 .page {
     display: none;
     animation: fadeIn 0.4s ease;
@@ -127,7 +124,6 @@ body {
     }
 }
 
-/* ===== منوی بازی‌ها ===== */
 .game-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -170,7 +166,6 @@ body {
     font-size: 12px;
 }
 
-/* ===== انتخاب تعداد نفرات ===== */
 .players-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -213,7 +208,6 @@ body {
     font-size: 12px;
 }
 
-/* ===== اتاق ===== */
 .room-box {
     display: flex;
     gap: 10px;
@@ -260,7 +254,6 @@ body {
     word-break: break-all;
 }
 
-/* ===== وضعیت بازی ===== */
 .game-status {
     display: flex;
     justify-content: space-between;
@@ -307,7 +300,6 @@ body {
     color: #00f0ff;
 }
 
-/* ===== تخته بازی ===== */
 .board-wrapper {
     display: flex;
     justify-content: center;
@@ -329,15 +321,12 @@ body {
 #gameBoard.chess-board {
     grid-template-columns: repeat(8, 1fr);
 }
-
 #gameBoard.xo-board {
     grid-template-columns: repeat(3, 1fr);
 }
-
 #gameBoard.dots-board {
     grid-template-columns: repeat(5, 1fr);
 }
-
 #gameBoard.four-board {
     grid-template-columns: repeat(7, 1fr);
 }
@@ -357,68 +346,53 @@ body {
 .cell.light {
     background: #e8e0d0;
 }
-
 .cell.dark {
     background: #6b5b4b;
 }
-
 .cell.x {
     color: #00f0ff;
     text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
     font-size: 36px;
     font-weight: 900;
 }
-
 .cell.o {
     color: #ff6b6b;
     text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
     font-size: 36px;
     font-weight: 900;
 }
-
 .cell.win {
     background: rgba(0, 240, 255, 0.2);
     border-color: #00f0ff;
     animation: winPulse 0.6s ease infinite;
 }
-
 .cell.disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
-
 .cell.piece-white {
     color: #fff;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
     font-size: 32px;
 }
-
 .cell.piece-black {
     color: #111;
     text-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
     font-size: 32px;
 }
-
 .cell.selected {
     background: #00f0ff !important;
     box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
 }
-
 .cell.valid {
     background: rgba(0, 240, 255, 0.25) !important;
 }
 
 @keyframes winPulse {
-    0%,
-    100% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.05);
-    }
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
 }
 
-/* ===== چت ===== */
 .chat-container {
     margin-top: 10px;
     border: 1px solid #1a2a4a;
@@ -444,11 +418,9 @@ body {
     color: #00f0ff;
     font-weight: 700;
 }
-
 .chat-messages .msg .sender.me {
     color: #f7971e;
 }
-
 .chat-messages .msg .text {
     color: #ccddee;
 }
@@ -485,7 +457,6 @@ body {
     border-radius: 20px;
 }
 
-/* ===== کنترل‌ها ===== */
 .controls {
     display: flex;
     gap: 10px;
@@ -502,23 +473,15 @@ body {
     min-height: 24px;
 }
 
-/* ===== لیست بازیکنان ===== */
 #playersListUl li {
     padding: 8px;
     border-bottom: 1px solid #1a2a4a;
     color: #aabbdd;
 }
 
-/* ===== پیام کوتاه ===== */
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
 .toast-message {
@@ -537,7 +500,6 @@ body {
     animation: fadeInUp 0.3s ease;
 }
 
-/* اسکرول چت */
 .chat-messages::-webkit-scrollbar {
     width: 4px;
 }
@@ -549,46 +511,16 @@ body {
     border-radius: 10px;
 }
 
-/* ===== ریسپانسیو ===== */
 @media (max-width: 480px) {
-    .container {
-        padding: 15px 12px;
-    }
-    .game-grid,
-    .players-options {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    .game-card,
-    .player-card {
-        padding: 15px 8px;
-    }
-    .game-card .icon,
-    .player-card .icon {
-        font-size: 30px;
-    }
-    .header h1 {
-        font-size: 20px;
-    }
-    #gameBoard {
-        max-width: 300px;
-        padding: 5px;
-        gap: 2px;
-    }
-    .cell {
-        font-size: 20px;
-    }
-    .room-box {
-        flex-direction: column;
-    }
-    .room-box .btn {
-        width: 100%;
-    }
-    .room-code-display span:first-child {
-        font-size: 24px;
-        letter-spacing: 3px;
-    }
-    .chat-messages {
-        height: 80px;
-    }
+    .container { padding: 15px 12px; }
+    .game-grid, .players-options { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .game-card, .player-card { padding: 15px 8px; }
+    .game-card .icon, .player-card .icon { font-size: 30px; }
+    .header h1 { font-size: 20px; }
+    #gameBoard { max-width: 300px; padding: 5px; gap: 2px; }
+    .cell { font-size: 20px; }
+    .room-box { flex-direction: column; }
+    .room-box .btn { width: 100%; }
+    .room-code-display span:first-child { font-size: 24px; letter-spacing: 3px; }
+    .chat-messages { height: 80px; }
 }
