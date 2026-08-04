@@ -10,12 +10,10 @@
     <div class="container">
         <div class="header">
             <h1>⚡ نئون <span>گیمز</span></h1>
-            <p class="sub">چهار بازی آنلاین دو نفره</p>
+            <p class="sub">بازی‌های آنلاین چندنفره</p>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- صفحه ۱: ورود با اسم -->
-        <!-- ========================================================= -->
+        <!-- ==================== صفحه ۱: ورود با اسم ==================== -->
         <div id="loginPage" class="page active">
             <div class="form-box">
                 <input type="text" id="playerName" placeholder="👤 اسم خودت رو بنویس">
@@ -23,9 +21,7 @@
             </div>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- صفحه ۲: منوی ۴ بازی -->
-        <!-- ========================================================= -->
+        <!-- ==================== صفحه ۲: منوی بازی‌ها ==================== -->
         <div id="menuPage" class="page">
             <div style="color:#8899bb;text-align:center;margin-bottom:15px;">
                 👋 خوش آمدی، <span id="menuUsername" style="color:#00f0ff;font-weight:700;"></span>
@@ -55,36 +51,57 @@
             <button class="btn btn-secondary btn-small" onclick="backToLogin()" style="display:block;margin:0 auto;">🚪 خروج</button>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- صفحه ۳: اتاق بازی -->
-        <!-- ========================================================= -->
-        <div id="roomPage" class="page">
+        <!-- ==================== صفحه ۳: انتخاب تعداد نفرات ==================== -->
+        <div id="playersPage" class="page">
             <button class="btn btn-small btn-secondary" onclick="backToMenu()" style="margin-bottom:12px;">↩️ بازگشت</button>
-            
-            <h3 style="color:#fff;text-align:center;margin-bottom:15px;" id="selectedGameTitle">🎮 بازی انتخاب شده</h3>
-            
-            <div class="form-box">
-                <div class="room-box">
-                    <input type="text" id="roomId" placeholder="🆔 کد اتاق">
-                    <button class="btn btn-small btn-success" onclick="createRoom()">➕ ساخت</button>
+            <h3 style="color:#fff;text-align:center;margin-bottom:15px;" id="selectedGameTitle2">🎮 بازی انتخاب شده</h3>
+            <div class="players-options">
+                <div class="player-card" onclick="selectPlayers(2)">
+                    <span class="icon">👥</span>
+                    <h3>۲ نفره</h3>
+                    <p>دوتایی بازی کن</p>
                 </div>
-                <button class="btn" onclick="joinRoom()">🚀 ورود به اتاق</button>
-            </div>
-
-            <div class="invite-box" id="inviteBox" style="display:none;">
-                <p style="color:#8899bb;">🔑 کد اتاق:</p>
-                <div class="room-code-display">
-                    <span id="roomCode"></span>
-                </div>
-                <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
-                    <button class="btn btn-small btn-success" onclick="copyRoomCode()">📋 کپی</button>
+                <div class="player-card" onclick="selectPlayers(4)">
+                    <span class="icon">👥👥</span>
+                    <h3>۴ نفره</h3>
+                    <p>چهارنفره بازی کن</p>
                 </div>
             </div>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- صفحه ۴: بازی -->
-        <!-- ========================================================= -->
+        <!-- ==================== صفحه ۴: اتاق بازی ==================== -->
+        <div id="roomPage" class="page">
+            <button class="btn btn-small btn-secondary" onclick="backToPlayers()" style="margin-bottom:12px;">↩️ بازگشت</button>
+            
+            <h3 style="color:#fff;text-align:center;margin-bottom:15px;" id="roomTitle">🎮 اتاق بازی</h3>
+            
+            <div class="form-box">
+                <div class="room-box">
+                    <input type="text" id="roomId" placeholder="🆔 کد اتاق رو وارد کن">
+                    <button class="btn btn-small btn-success" onclick="createRoom()">➕ ساخت اتاق</button>
+                </div>
+                <button class="btn" onclick="joinRoom()">🚀 ورود به اتاق</button>
+            </div>
+
+            <!-- نمایش کد اتاق -->
+            <div class="invite-box" id="inviteBox" style="display:none;">
+                <p style="color:#8899bb;margin-bottom:5px;">🔑 کد اتاق رو به دوستات بده:</p>
+                <div class="room-code-display" id="roomCodeDisplay">
+                    <span id="roomCode">-----</span>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+                    <button class="btn btn-small btn-success" onclick="copyRoomCode()">📋 کپی کد</button>
+                </div>
+            </div>
+
+            <!-- لیست بازیکنان منتظر -->
+            <div id="playersList" style="margin-top:15px;display:none;">
+                <p style="color:#8899bb;text-align:center;">🔄 منتظر ورود بازیکنان...</p>
+                <ul id="playersListUl" style="list-style:none;text-align:center;color:#fff;"></ul>
+            </div>
+        </div>
+
+        <!-- ==================== صفحه ۵: بازی ==================== -->
         <div id="gamePage" class="page">
             <button class="btn btn-small btn-secondary" onclick="leaveGame()" style="margin-bottom:12px;">🚪 خروج از بازی</button>
             
