@@ -1,0 +1,319 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #0a0a1a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.container {
+    background: rgba(10, 10, 30, 0.88);
+    backdrop-filter: blur(12px);
+    border: 2px solid #00f0ff;
+    border-radius: 24px;
+    padding: 25px 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.15);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: #fff;
+    font-size: 26px;
+    text-shadow: 0 0 30px #00f0ff55;
+}
+
+.header h1 span {
+    color: #00f0ff;
+}
+
+.header .sub {
+    color: #667799;
+    font-size: 13px;
+    letter-spacing: 2px;
+}
+
+/* ===== دکمه‌ها ===== */
+.btn {
+    padding: 12px;
+    background: linear-gradient(135deg, #00c8ff, #0066ff);
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 35px rgba(0, 200, 255, 0.25);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #00d2a0, #00a87a);
+}
+
+.btn-small {
+    padding: 8px 18px;
+    font-size: 13px;
+    width: auto;
+    border-radius: 30px;
+}
+
+/* ===== فرم‌ها ===== */
+.form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.form-box input {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid #1a2a4a;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    text-align: center;
+}
+
+.form-box input::placeholder {
+    color: #445577;
+}
+
+.form-box input:focus {
+    outline: none;
+    border-color: #00f0ff;
+}
+
+/* ===== صفحات ===== */
+.page {
+    display: none;
+    animation: fadeIn 0.4s ease;
+}
+
+.page.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== اتاق ===== */
+.room-box {
+    display: flex;
+    gap: 10px;
+}
+
+.room-box input {
+    flex: 1;
+}
+
+.room-box .btn {
+    width: auto;
+}
+
+.invite-box {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 12px;
+    margin-top: 12px;
+    color: #8899bb;
+    text-align: center;
+    font-size: 13px;
+    word-break: break-all;
+}
+
+.invite-box span {
+    color: #00f0ff;
+    font-weight: 700;
+    font-size: 18px;
+    display: block;
+    margin: 5px 0;
+}
+
+/* ===== وضعیت بازی ===== */
+.game-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    color: #fff;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00c8ff, #0066ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+}
+
+.avatar.opponent {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+}
+
+.turn-indicator {
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(0, 240, 255, 0.15);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    font-size: 12px;
+    color: #00f0ff;
+}
+
+/* ===== تخته بازی ===== */
+.board-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+#xoBoard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 350px;
+    aspect-ratio: 1;
+    background: #111128;
+    padding: 8px;
+    border-radius: 16px;
+    border: 1px solid #1a2a4a;
+}
+
+.xo-cell {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 900;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid #1a2a4a;
+    color: #fff;
+}
+
+.xo-cell:hover:not(.disabled) {
+    border-color: #00f0ff;
+    background: rgba(0, 240, 255, 0.05);
+}
+
+.xo-cell.x {
+    color: #00f0ff;
+    text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+}
+
+.xo-cell.o {
+    color: #ff6b6b;
+    text-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+}
+
+.xo-cell.win {
+    background: rgba(0, 240, 255, 0.2);
+    border-color: #00f0ff;
+    animation: winPulse 0.6s ease infinite;
+}
+
+.xo-cell.disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+@keyframes winPulse {
+    0%,
+    100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ===== کنترل‌ها ===== */
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 12px 0;
+}
+
+.status-text {
+    text-align: center;
+    color: #8899bb;
+    font-size: 14px;
+    margin-top: 8px;
+    min-height: 24px;
+}
+
+/* ===== ریسپانسیو ===== */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px 12px;
+    }
+    #xoBoard {
+        max-width: 280px;
+        padding: 5px;
+        gap: 4px;
+    }
+    .xo-cell {
+        font-size: 36px;
+    }
+    .header h1 {
+        font-size: 20px;
+    }
+    .room-box {
+        flex-direction: column;
+    }
+    .room-box .btn {
+        width: 100%;
+    }
+}
