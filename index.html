@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>❌ نئون دوز - چندنفره</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- هدر -->
+        <div class="header">
+            <h1>❌ نئون <span>دوز</span></h1>
+            <p class="sub">بازی دو نفره آنلاین</p>
+        </div>
+
+        <!-- صفحه ورود به اتاق -->
+        <div id="lobbyPage" class="page active">
+            <div class="form-box">
+                <input type="text" id="playerName" placeholder="👤 نام شما" value="کاربر">
+                <div class="room-box">
+                    <input type="text" id="roomId" placeholder="🆔 کد اتاق">
+                    <button class="btn btn-small btn-success" onclick="createRoom()">➕ ساخت اتاق</button>
+                </div>
+                <button class="btn" onclick="joinRoom()">🚀 ورود به اتاق</button>
+            </div>
+            <div class="invite-box" id="inviteBox" style="display:none;">
+                کد اتاق: <span id="roomCode"></span>
+                <br>
+                <button class="btn btn-small" onclick="copyRoomCode()">📋 کپی کن</button>
+            </div>
+        </div>
+
+        <!-- صفحه بازی -->
+        <div id="gamePage" class="page">
+            <div class="game-status">
+                <div class="player-info">
+                    <span class="avatar" id="p1Avatar">X</span>
+                    <span id="p1Name">شما</span>
+                </div>
+                <div class="turn-indicator" id="turnIndicator">⏳ در حال اتصال...</div>
+                <div class="player-info">
+                    <span class="avatar opponent" id="p2Avatar">O</span>
+                    <span id="p2Name">حریف</span>
+                </div>
+            </div>
+
+            <div class="board-wrapper">
+                <div id="xoBoard"></div>
+            </div>
+
+            <div class="status-text" id="gameStatus">⏳ منتظر حریف...</div>
+
+            <div class="controls">
+                <button class="btn btn-small btn-secondary" onclick="resetGame()">🔄 بازی جدید</button>
+                <button class="btn btn-small" onclick="leaveRoom()">🚪 خروج</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- کتابخانه PeerJS -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <!-- منطق بازی -->
+    <script src="script.js"></script>
+</body>
+</html>
