@@ -3,64 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>❌ نئون دوز - چندنفره</title>
+    <title>⚡ نئون گیمز</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <!-- هدر -->
         <div class="header">
-            <h1>❌ نئون <span>دوز</span></h1>
-            <p class="sub">بازی دو نفره آنلاین</p>
+            <h1>⚡ نئون <span>گیمز</span></h1>
+            <p class="sub">چهار بازی آنلاین دو نفره</p>
         </div>
 
-        <!-- صفحه ورود به اتاق -->
-        <div id="lobbyPage" class="page active">
+        <!-- ========================================================= -->
+        <!-- صفحه ۱: ورود با اسم -->
+        <!-- ========================================================= -->
+        <div id="loginPage" class="page active">
             <div class="form-box">
-                <input type="text" id="playerName" placeholder="👤 نام شما" value="کاربر">
+                <input type="text" id="playerName" placeholder="👤 اسم خودت رو بنویس">
+                <button class="btn" onclick="enterMenu()">🚀 ورود به بازی‌ها</button>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- صفحه ۲: منوی ۴ بازی -->
+        <!-- ========================================================= -->
+        <div id="menuPage" class="page">
+            <div style="color:#8899bb;text-align:center;margin-bottom:15px;">
+                👋 خوش آمدی، <span id="menuUsername" style="color:#00f0ff;font-weight:700;"></span>
+            </div>
+            <div class="game-grid">
+                <div class="game-card" onclick="selectGame('chess')">
+                    <span class="icon">♟️</span>
+                    <h3>شطرنج</h3>
+                    <p>استراتژیک</p>
+                </div>
+                <div class="game-card" onclick="selectGame('xo')">
+                    <span class="icon">❌</span>
+                    <h3>دوز (XO)</h3>
+                    <p>ساده و سریع</p>
+                </div>
+                <div class="game-card" onclick="selectGame('dots')">
+                    <span class="icon">🔴</span>
+                    <h3>خط و نقطه</h3>
+                    <p>فکری</p>
+                </div>
+                <div class="game-card" onclick="selectGame('four')">
+                    <span class="icon">🟡</span>
+                    <h3>چهار تایی</h3>
+                    <p>چالش‌برانگیز</p>
+                </div>
+            </div>
+            <button class="btn btn-secondary btn-small" onclick="backToLogin()" style="display:block;margin:0 auto;">🚪 خروج</button>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- صفحه ۳: اتاق بازی -->
+        <!-- ========================================================= -->
+        <div id="roomPage" class="page">
+            <button class="btn btn-small btn-secondary" onclick="backToMenu()" style="margin-bottom:12px;">↩️ بازگشت</button>
+            
+            <h3 style="color:#fff;text-align:center;margin-bottom:15px;" id="selectedGameTitle">🎮 بازی انتخاب شده</h3>
+            
+            <div class="form-box">
                 <div class="room-box">
                     <input type="text" id="roomId" placeholder="🆔 کد اتاق">
-                    <button class="btn btn-small btn-success" onclick="createRoom()">➕ ساخت اتاق</button>
+                    <button class="btn btn-small btn-success" onclick="createRoom()">➕ ساخت</button>
                 </div>
                 <button class="btn" onclick="joinRoom()">🚀 ورود به اتاق</button>
             </div>
+
             <div class="invite-box" id="inviteBox" style="display:none;">
-                کد اتاق: <span id="roomCode"></span>
-                <br>
-                <button class="btn btn-small" onclick="copyRoomCode()">📋 کپی کن</button>
+                <p style="color:#8899bb;">🔑 کد اتاق:</p>
+                <div class="room-code-display">
+                    <span id="roomCode"></span>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;">
+                    <button class="btn btn-small btn-success" onclick="copyRoomCode()">📋 کپی</button>
+                </div>
             </div>
         </div>
 
-        <!-- صفحه بازی -->
+        <!-- ========================================================= -->
+        <!-- صفحه ۴: بازی -->
+        <!-- ========================================================= -->
         <div id="gamePage" class="page">
+            <button class="btn btn-small btn-secondary" onclick="leaveGame()" style="margin-bottom:12px;">🚪 خروج از بازی</button>
+            
             <div class="game-status">
                 <div class="player-info">
-                    <span class="avatar" id="p1Avatar">X</span>
+                    <span class="avatar" id="p1Avatar">👤</span>
                     <span id="p1Name">شما</span>
                 </div>
                 <div class="turn-indicator" id="turnIndicator">⏳ در حال اتصال...</div>
                 <div class="player-info">
-                    <span class="avatar opponent" id="p2Avatar">O</span>
+                    <span class="avatar opponent" id="p2Avatar">👤</span>
                     <span id="p2Name">حریف</span>
                 </div>
             </div>
 
             <div class="board-wrapper">
-                <div id="xoBoard"></div>
+                <div id="gameBoard"></div>
             </div>
 
             <div class="status-text" id="gameStatus">⏳ منتظر حریف...</div>
 
             <div class="controls">
                 <button class="btn btn-small btn-secondary" onclick="resetGame()">🔄 بازی جدید</button>
-                <button class="btn btn-small" onclick="leaveRoom()">🚪 خروج</button>
             </div>
         </div>
     </div>
 
-    <!-- کتابخانه PeerJS -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
-    <!-- منطق بازی -->
     <script src="script.js"></script>
 </body>
 </html>
