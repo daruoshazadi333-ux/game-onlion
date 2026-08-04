@@ -170,6 +170,49 @@ body {
     font-size: 12px;
 }
 
+/* ===== انتخاب تعداد نفرات ===== */
+.players-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin: 15px 0;
+}
+
+.player-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid #1a2a4a;
+    border-radius: 16px;
+    padding: 25px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #fff;
+}
+
+.player-card:hover {
+    transform: translateY(-4px);
+    border-color: #f7971e;
+    box-shadow: 0 8px 30px rgba(247, 151, 30, 0.1);
+    background: rgba(247, 151, 30, 0.05);
+}
+
+.player-card .icon {
+    font-size: 40px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.player-card h3 {
+    color: #f7971e;
+    font-size: 18px;
+    margin-bottom: 3px;
+}
+
+.player-card p {
+    color: #667799;
+    font-size: 12px;
+}
+
 /* ===== اتاق ===== */
 .room-box {
     display: flex;
@@ -195,7 +238,7 @@ body {
 
 .room-code-display {
     background: #0a0a1a;
-    padding: 12px;
+    padding: 15px;
     border-radius: 10px;
     margin: 8px 0;
     border: 2px solid #00f0ff;
@@ -203,9 +246,9 @@ body {
 
 .room-code-display span {
     color: #00f0ff;
-    font-size: 28px;
+    font-size: 32px;
     font-weight: 900;
-    letter-spacing: 3px;
+    letter-spacing: 4px;
     display: block;
     word-break: break-all;
 }
@@ -276,7 +319,6 @@ body {
     border: 1px solid #1a2a4a;
 }
 
-/* شطرنج */
 #gameBoard.chess-board {
     grid-template-columns: repeat(8, 1fr);
 }
@@ -386,19 +428,57 @@ body {
     min-height: 24px;
 }
 
+/* ===== لیست بازیکنان ===== */
+#playersListUl li {
+    padding: 8px;
+    border-bottom: 1px solid #1a2a4a;
+    color: #aabbdd;
+}
+
+/* ===== پیام کوتاه ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 240, 255, 0.9);
+    color: #0a0a1a;
+    padding: 12px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 14px;
+    z-index: 9999;
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+    animation: fadeInUp 0.3s ease;
+}
+
 /* ===== ریسپانسیو ===== */
 @media (max-width: 480px) {
     .container {
         padding: 15px 12px;
     }
-    .game-grid {
+    .game-grid,
+    .players-options {
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
-    .game-card {
+    .game-card,
+    .player-card {
         padding: 15px 8px;
     }
-    .game-card .icon {
+    .game-card .icon,
+    .player-card .icon {
         font-size: 30px;
     }
     .header h1 {
